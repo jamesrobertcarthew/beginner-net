@@ -28,13 +28,15 @@ class first_generation(object):
             print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
     def train(self, iterations):
-        layer = []
+        layer = [None]*self.layer_count
         for i in xrange(iterations):
-            layer.append(self.data_in)
+            layer[0] = self.data_in
             self.log('Layer Zero',layer[0])
             self.log('Synapse Zero', self.synapse[0])
-
-            # need a for loop to perform sigmoids and propagate
+            for j in range(0, self.layer_count-1):
+                self.log("Layer {!s}".format(j), layer[j])
+                self.log("Synapse {!s}".format(j), self.synapse[j])
+                layer[j+1] = np.dot(layer[0], self.synapse[j])
 
             # a reverse for loop to weight the synapses and stuff
 
@@ -61,7 +63,7 @@ if __name__ == '__main__':
     my_net = first_generation(data_in, desired_output, layer_count, seed, verbose)
 
     # training iterations
-    iterations = 100
+    iterations = 2
 
     # train the net
     my_net.train(iterations)
