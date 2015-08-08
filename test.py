@@ -8,7 +8,7 @@ data_in = np.array([  [0,0,1], [0,1,1],[1,0,1],[1,1,1] ])
 desired_output = np.array([[0,0,1,1]]).T
 
 # number of layers
-layer_count = 5
+layer_count = 4
 
 # random seed
 seed = 3
@@ -20,7 +20,7 @@ verbose = True
 my_net = second_generation(data_in, desired_output, layer_count, seed, verbose)
 
 # training iterations
-iterations = 2
+iterations = 10
 
 # train the net
 my_net.train(iterations)
