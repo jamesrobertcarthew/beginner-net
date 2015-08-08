@@ -3,7 +3,7 @@
 
 import numpy as np
 
-class first_generation(object):
+class second_generation(object):
 
     def __init__(self, data_in, desired_output, layer_count, seed, verbose):
         self.verbose = verbose
@@ -23,47 +23,26 @@ class first_generation(object):
     def derivative_of_sigmoid(self, layer):
         return layer * (1 - layer)
 
-    def log(self, a_string, data=''):
+    def log(self, a_string='Value', data=''):
         if self.verbose is True:
             print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
     def train(self, iterations):
         layer = [None]*self.layer_count
+        error = [None]*self.layer_count
+        delta = [None]*self.layer_count
         for i in xrange(iterations):
             layer[0] = self.data_in
-            self.log('Layer Zero',layer[0])
-            self.log('Synapse Zero', self.synapse[0])
+            self.log('Layer 0',layer[0])
+            self.log('Synapse 0', self.synapse[0])
             for j in range(0, self.layer_count-1):
                 self.log("Layer {!s}".format(j), layer[j])
                 self.log("Synapse {!s}".format(j), self.synapse[j])
                 layer[j+1] = np.dot(layer[0], self.synapse[j])
-
+            error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
+            delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
+            self.log('Error {!s}'.format(self.layer_count-1), error[self.layer_count-1])
+            self.log('Confidence Weighted Error {!s}'.format(self.layer_count-1), delta[self.layer_count-1])
+            for j in range(self.layer_count-1, 0):
+                pass
             # a reverse for loop to weight the synapses and stuff
-
-if __name__ == '__main__':
-    # input dataset
-    data_in = np.array([  [0,0,1],
-                    [0,1,1],
-                    [1,0,1],
-                    [1,1,1] ])
-
-    # output dataset
-    desired_output = np.array([[0,0,1,1]]).T
-
-    # number of layers
-    layer_count = 5
-
-    # random seed
-    seed = 3
-
-    # toggle verbose
-    verbose = True
-
-    # create my_net
-    my_net = first_generation(data_in, desired_output, layer_count, seed, verbose)
-
-    # training iterations
-    iterations = 2
-
-    # train the net
-    my_net.train(iterations)
