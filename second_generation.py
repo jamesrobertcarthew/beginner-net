@@ -30,27 +30,34 @@ class second_generation(object):
     def forward_propagation(self, layer):
         self.log('Entering Forward Propagation Loop')
         layer[0] = self.data_in
-        self.log("Layer {!s}".format(0), layer[0])
-        self.log("Synapse {!s}".format(0), self.synapse[0])
+        self.log('Layer {!s}'.format(0), layer[0])
+        self.log('Synapse {!s}'.format(0), self.synapse[0])
         for j in range(0, self.layer_count-1):
             layer[j+1] = np.dot(layer[j], self.synapse[j])
-            self.log("Layer {!s}".format(j+1), layer[j+1])
-            self.log("Synapse {!s}".format(j+1), self.synapse[j+1])
+            self.log('Layer {!s}'.format(j+1), layer[j+1])
+            self.log('Synapse {!s}'.format(j+1), self.synapse[j+1])
         return layer
 
-    def backpropagation(layer, delta, error):
+    def backpropagation(self, layer, delta, error):
         self.log('Entering Backpropagation Loop')
+        error[self.layer_count-1] = layer[0] - layer[self.layer_count-1]
+        delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
+        self.log('Error {!s}'.format(self.layer_count-1), error[self.layer_count-1])
+        self.log('Delta {!s}'.format(self.layer_count-1), delta[self.layer_count-1])
+        # evaluate error
+        # evaluate weighted 
+        return layer, delta, error
 
     def update_synapses(self, layer, delta):
         self.log('Entering Update Synapse Loop')
 
     def train(self, iterations):
-        layer = [None] * (self.layer_count+1) # wrap values so
-        error = [None] * (self.layer_count+1) # layer[0] == layer[self.layer_count]
-        delta = [None] * (self.layer_count+1)
+        layer = [None] * (self.layer_count)
+        error = [None] * (self.layer_count)
+        delta = [None] * (self.layer_count)
         for i in xrange(iterations):
             layer = self.forward_propagation(layer)
-            # layer, delta, error = self.backpropagation(layer, delta, error)
+            layer, delta, error = self.backpropagation(layer, delta, error)
             # self.update_synapses(layer, delta)
         self.log('Net Output', layer[self.layer_count-1])
         self.log('Desired Output', self.desired_output)
