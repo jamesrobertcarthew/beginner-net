@@ -20,7 +20,7 @@ verbose = True
 my_net = second_generation(data_in, desired_output, layer_count, seed, verbose)
 
 # training iterations
-iterations = 10
+iterations = 2
 
 # train the net
 my_net.train(iterations)

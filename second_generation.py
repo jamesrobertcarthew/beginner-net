@@ -42,15 +42,20 @@ class second_generation(object):
         self.log('Entering Backpropagation Loop')
         error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
         delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
-        self.log('Error {!s}'.format(0), error[0])
-        self.log('Confidence Weighted Error {!s}'.format(0), delta[0])
+        self.log('Error {!s}'.format(self.layer_count-1), error[self.layer_count-1])
+        self.log('Delta {!s}'.format(self.layer_count-1), delta[self.layer_count-1])
         for j in reversed(range(1, self.layer_count)):
             error[j-1] = np.dot(delta[j], self.synapse[j-1].T)
             delta[j-1] = error[j-1] * self.derivative_of_sigmoid(layer[j-1])
             self.log('Error {!s}'.format(j), error[j])
-            self.log('Confidence Weighted Error {!s}'.format(j), delta[j])
-
+            self.log('Delta {!s}'.format(j), delta[j])
         return layer, delta, error
+
+    def update_synapses(self, layer, delta):
+        self.log('Entering Update Synapse Loop')
+        for i in reversed(range(1, self.layer_count)):
+            self.synapse[i-1] += np.dot(layer[i-1].T, delta[i])
+            self.log('Synapse {!s}'.format(i), self.synapse[i])
 
     def train(self, iterations):
         layer = [None]*self.layer_count
@@ -59,3 +64,6 @@ class second_generation(object):
         for i in xrange(iterations):
             layer = self.forward_propagation(layer)
             # layer, delta, error = self.backpropagation(layer, delta, error)
+            # self.update_synapses(layer, delta)
+        self.log('Net Output', layer[self.layer_count-1])
+        self.log('Desired Output', self.desired_output)
