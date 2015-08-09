@@ -8,10 +8,10 @@ data_in = np.array([  [0,0,1], [0,1,1],[1,0,1],[1,1,1] ])
 desired_output = np.array([[0,0,1,1]]).T
 
 # number of layers
-layer_count = 4
+layer_count = 3
 
 # random seed
-seed = 3
+seed = 1
 
 # toggle verbose
 verbose = True

@@ -1,5 +1,6 @@
 # this code is inspired from http://iamtrask.github.io/2015/07/12/basic-python-network/
-# Now I want to make more layers
+
+# HR manager in an infinite monkey cage
 
 import numpy as np
 
@@ -12,8 +13,9 @@ class second_generation(object):
         self.layer_count = layer_count
         self.random = np.random.seed(seed)
         self.synapse = []
+        self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1)
         for i in xrange(self.layer_count):
-            self.synapse.append(2*np.random.random((self.data_in.shape[1], 1)) - 1)
+            self.synapse.append(2*np.random.random((self.data_in.shape[0], 1)) - 1)
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -26,14 +28,25 @@ class second_generation(object):
             print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
     def forward_propagation(self, layer):
+        self.log('Entering Forward Propagation Loop')
         layer[0] = self.data_in
-        self.log('Layer 0',layer[0])
-        self.log('Synapse 0', self.synapse[0])
         for j in range(0, self.layer_count-1):
             self.log("Layer {!s}".format(j), layer[j])
             self.log("Synapse {!s}".format(j), self.synapse[j])
             layer[j+1] = np.dot(layer[0], self.synapse[j])
         return layer
+
+    def backpropagation(self, layer, delta, error):
+        self.log('Entering Backpropagation Loop')
+        error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
+        delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
+        for j in reversed(range(1, self.layer_count)):
+            self.log('Error {!s}'.format(j), error[j])
+            self.log('Confidence Weighted Error {!s}'.format(j), delta[j])
+            error[j-1] = np.dot(delta[j], self.synapse[j-1].T)
+            delta[j-1] = error[j-1] * self.derivative_of_sigmoid(layer[j-1])
+
+        return layer, delta, error
 
     def train(self, iterations):
         layer = [None]*self.layer_count
@@ -41,11 +54,4 @@ class second_generation(object):
         delta = [None]*self.layer_count
         for i in xrange(iterations):
             layer = self.forward_propagation(layer)
-            self.log('Enter Backpropagation Loop')
-            error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
-            delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
-            self.log('Error {!s}'.format(self.layer_count-1), error[self.layer_count-1])
-            self.log('Confidence Weighted Error {!s}'.format(self.layer_count-1), delta[self.layer_count-1])
-            for j in reversed(range(0, self.layer_count-1)):
-                self.log('Error {!s}'.format(j), error[j])
-                self.log('Confidence Weighted Error {!s}'.format(j), delta[j])
+            layer, delta, error = self.backpropagation(layer, delta, error)
