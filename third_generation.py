@@ -4,7 +4,7 @@
 
 import numpy as np
 
-class second_generation(object):
+class third_generation(object):
 
     def __init__(self, data_in, desired_output, layer_count, seed, verbose=False):
         self.verbose = verbose

@@ -1,5 +1,5 @@
 import numpy as np
-from second_generation import second_generation
+from third_generation import third_generation
 import os # not neccesary, just a useful delineator :-P
 # comment this if you have no sense of humour
 os.system('echo Neural Network Go! | cowsay | lolcat')
@@ -20,10 +20,10 @@ seed = 1
 verbose = True
 
 # create my_net
-my_net = second_generation(data_in, desired_output, layer_count, seed, verbose)
+my_net = third_generation(data_in, desired_output, layer_count, seed, verbose)
 
 # training iterations
-iterations = 3
+iterations = 300
 
 # train the net
 my_net.train(iterations)
