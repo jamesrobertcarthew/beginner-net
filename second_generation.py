@@ -38,29 +38,16 @@ class second_generation(object):
             self.log("Synapse {!s}".format(j+1), self.synapse[j+1])
         return layer
 
-    def backpropagation(self, layer, delta, error):
+    def backpropagation(layer, delta, error):
         self.log('Entering Backpropagation Loop')
-        error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
-        delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
-        self.log('Error {!s}'.format(self.layer_count-1), error[self.layer_count-1])
-        self.log('Delta {!s}'.format(self.layer_count-1), delta[self.layer_count-1])
-        for j in reversed(range(1, self.layer_count)):
-            error[j-1] = np.dot(delta[j], self.synapse[j-1].T)
-            delta[j-1] = error[j-1] * self.derivative_of_sigmoid(layer[j-1])
-            self.log('Error {!s}'.format(j), error[j])
-            self.log('Delta {!s}'.format(j), delta[j])
-        return layer, delta, error
 
     def update_synapses(self, layer, delta):
         self.log('Entering Update Synapse Loop')
-        for i in reversed(range(1, self.layer_count)):
-            self.synapse[i-1] += np.dot(layer[i-1].T, delta[i])
-            self.log('Synapse {!s}'.format(i), self.synapse[i])
 
     def train(self, iterations):
-        layer = [None]*self.layer_count
-        error = [None]*self.layer_count
-        delta = [None]*self.layer_count
+        layer = [None] * (self.layer_count+1) # wrap values so
+        error = [None] * (self.layer_count+1) # layer[0] == layer[self.layer_count]
+        delta = [None] * (self.layer_count+1)
         for i in xrange(iterations):
             layer = self.forward_propagation(layer)
             # layer, delta, error = self.backpropagation(layer, delta, error)
