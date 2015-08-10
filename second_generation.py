@@ -3,6 +3,7 @@
 # HR manager in an infinite monkey cage
 
 import numpy as np
+import pickle
 
 class second_generation(object):
 
@@ -48,8 +49,6 @@ class second_generation(object):
             error[j] = np.dot(delta[j+1], self.synapse[j].T)
             delta[j] = error[j] * self.derivative_of_sigmoid(layer[j])
             self.log('Error {!s}'.format(j), error[j])
-        # evaluate error
-        # evaluate weighted
         return layer, delta, error
 
     def update_synapses(self, layer, delta):
@@ -67,3 +66,21 @@ class second_generation(object):
             self.update_synapses(layer, delta)
         self.log('Net Output', layer[self.layer_count-1])
         self.log('Desired Output', self.desired_output)
+
+    def run(self, data_in, iterations):
+        self.log('Run Forward Propagation Loop')
+        layer = [None] * (self.layer_count)
+        layer[0] = data_in
+        for i in xrange(iterations):
+            layer = self.forward_propagation(layer, i)
+        self.log('Net Output', layer[self.layer_count-1])
+
+    def save_synapse(self, file_name):
+        self.log('Save Synapse', file_name)
+        file_object = open(file_name, 'wb')
+        pickle.dump(self.synapse, file_object)
+
+    def load_synapse(self, file_name):
+        self.log('Load Synapse', file_name)
+        file_object = open(file_name, 'r')
+        self.synapse = pickle.load(file_object)
