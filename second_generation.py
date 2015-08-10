@@ -17,6 +17,7 @@ class second_generation(object):
         self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1)
         for i in xrange(self.layer_count):
             self.synapse.append(2*np.random.random((self.data_in.shape[0], self.data_in.shape[1])) - 1)
+            self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1)
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
