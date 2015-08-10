@@ -65,6 +65,7 @@ class second_generation(object):
             layer, delta, error = self.backpropagation(layer, delta, error, i)
             self.update_synapses(layer, delta)
         self.log('Net Output', layer[self.layer_count-1])
+        self.log('Rounded Output', np.around(layer[self.layer_count-1]))
         self.log('Desired Output', self.desired_output)
 
     def run(self, data_in, iterations):
@@ -74,6 +75,8 @@ class second_generation(object):
         for i in xrange(iterations):
             layer = self.forward_propagation(layer, i)
         self.log('Net Output', layer[self.layer_count-1])
+        self.log('Rounded Output', np.around(layer[self.layer_count-1]))
+
 
     def save_synapse(self, file_name):
         self.log('Save Synapse', file_name)
