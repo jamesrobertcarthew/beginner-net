@@ -14,10 +14,10 @@ class second_generation(object):
         self.layer_count = layer_count
         self.random = np.random.seed(seed)
         self.synapse = []
-        self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1)
         for i in xrange(self.layer_count):
+            self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1) #synapses need to be related to output shape somehow
             self.synapse.append(2*np.random.random((self.data_in.shape[0], self.data_in.shape[1])) - 1)
-            self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1)
+
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -58,6 +58,7 @@ class second_generation(object):
             self.synapse[j] += np.dot(layer[j].T, delta[j+1])
 
     def train(self, iterations):
+        self.log('Entering Training Loop')
         layer = [None] * (self.layer_count)
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
@@ -70,13 +71,13 @@ class second_generation(object):
         self.log('Desired Output', self.desired_output)
 
     def run(self, data_in, iterations):
-        self.log('Run Forward Propagation Loop')
         layer = [None] * (self.layer_count)
         layer[0] = data_in
         for i in xrange(iterations):
             layer = self.forward_propagation(layer, i)
         self.log('Net Output', layer[self.layer_count-1])
         self.log('Rounded Output', np.around(layer[self.layer_count-1]))
+        return layer[self.layer_count-1]
 
 
     def save_synapse(self, file_name):
