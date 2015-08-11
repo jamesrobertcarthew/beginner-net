@@ -25,7 +25,7 @@ class second_generation(object):
         if self.verbose is True:
             print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
-    def forward_propagation(self, layer, iteration):
+    def forward_propagation(self, layer, iteration=0):
         self.log('Entering Forward Propagation Loop', iteration)
         layer[0] = self.data_in
         self.log('Layer {!s}'.format(0), layer[0])
@@ -36,7 +36,7 @@ class second_generation(object):
             self.log('Synapse {!s}'.format(j+1), self.synapse[j+1])
         return layer
 
-    def backpropagation(self, layer, delta, error, iteration):
+    def backpropagation(self, layer, delta, error, iteration=0):
         self.log('Entering Backpropagation Loop', iteration)
         error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
         delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
@@ -58,9 +58,11 @@ class second_generation(object):
         self.data_in = data_in
         self.desired_output = desired_output
         self.layer_count = layer_count
+        self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
         for i in xrange(self.layer_count):
-            self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
             self.synapse.append(2*np.random.random((self.data_in.shape[0], self.desired_output.shape[1])) - 1)
+            if self.layer_count <= 3:
+                self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
         layer = [None] * (self.layer_count)
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
