@@ -7,17 +7,13 @@ import pickle
 
 class second_generation(object):
 
-    def __init__(self, data_in, desired_output, layer_count, seed, verbose=False):
+    def __init__(self, seed=1, verbose=False):
         self.verbose = verbose
-        self.data_in = data_in
-        self.desired_output = desired_output
-        self.layer_count = layer_count
+        self.data_in = None
+        self.desired_output = None
+        self.layer_count = None
         self.random = np.random.seed(seed)
         self.synapse = []
-        for i in xrange(self.layer_count):
-            self.synapse.append(2*np.random.random((self.data_in.shape[1], self.data_in.shape[0])) - 1) #synapses need to be related to output shape somehow
-            self.synapse.append(2*np.random.random((self.data_in.shape[0], self.data_in.shape[1])) - 1)
-
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -57,8 +53,14 @@ class second_generation(object):
         for j in range(0, self.layer_count-1):
             self.synapse[j] += np.dot(layer[j].T, delta[j+1])
 
-    def train(self, iterations):
+    def train(self, data_in, desired_output, layer_count, iterations):
         self.log('Entering Training Loop')
+        self.data_in = data_in
+        self.desired_output = desired_output
+        self.layer_count = layer_count
+        for i in xrange(self.layer_count):
+            self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
+            self.synapse.append(2*np.random.random((self.data_in.shape[0], self.desired_output.shape[1])) - 1)
         layer = [None] * (self.layer_count)
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
@@ -66,17 +68,26 @@ class second_generation(object):
             layer = self.forward_propagation(layer, i)
             layer, delta, error = self.backpropagation(layer, delta, error, i)
             self.update_synapses(layer, delta)
-        self.log('Net Output', layer[self.layer_count-1])
-        self.log('Rounded Output', np.around(layer[self.layer_count-1]))
-        self.log('Desired Output', self.desired_output)
+        self.show_result(layer)
 
-    def run(self, data_in, iterations):
+    def show_result(self, layer):
+        if self.verbose is True:
+            self.log('Net Output', layer[self.layer_count-1])
+            rounded_array = np.around(layer[self.layer_count-1])
+            self.log('Rounded Output', rounded_array)
+            self.log('Desired Output', self.desired_output)
+            if np.array_equal(rounded_array, self.desired_output) is True:
+                self.log('It worked!',':-)')
+            else:
+                self.log('Sorry, try again',':-(')
+
+    def run(self, data_in, layer_count, iterations):
+        self.layer_count = layer_count
         layer = [None] * (self.layer_count)
         layer[0] = data_in
         for i in xrange(iterations):
             layer = self.forward_propagation(layer, i)
-        self.log('Net Output', layer[self.layer_count-1])
-        self.log('Rounded Output', np.around(layer[self.layer_count-1]))
+        self.show_result(layer)
         return layer[self.layer_count-1]
 
 
