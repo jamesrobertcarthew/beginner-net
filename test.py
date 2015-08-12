@@ -15,7 +15,7 @@ desired_output = np.array([[0, 1, 1, 1],[1, 0, 1, 0],[1, 1, 1, 1],[0, 0, 0, 1]])
 # desired_output = np.array([[0, 1],[1, 0],[1, 1],[0, 0]])
 
 # number of layers
-layer_count = 4
+layer_count = 5
 
 # random seed
 seed = 1
@@ -27,16 +27,16 @@ verbose = True
 my_net = second_generation(seed, verbose)
 
 # training iterations
-iterations = 100
+iterations = 500
 
 # train the net
 my_net.train(data_in, desired_output, layer_count, iterations)
 
 # save the synapse array to file
-my_net.save_synapse('synapse')
+my_net.save_synapse('test.synapse')
 
 # load synapse array
-my_net.load_synapse('synapse')
+my_net.load_synapse('test.synapse')
 
 # reapply synapse array
 my_net.run(data_in, layer_count, iterations)

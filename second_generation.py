@@ -1,12 +1,8 @@
-# this code is inspired from http://iamtrask.github.io/2015/07/12/basic-python-network/
-
-# HR manager in an infinite monkey cage
-
 import numpy as np
 import pickle
 
 class second_generation(object):
-
+    # Setup Class
     def __init__(self, seed=1, verbose=False):
         self.verbose = verbose
         self.data_in = None
@@ -92,7 +88,6 @@ class second_generation(object):
         self.show_result(layer)
         return layer[self.layer_count-1]
 
-
     def save_synapse(self, file_name):
         self.log('Save Synapse', file_name)
         file_object = open(file_name, 'wb')
@@ -102,3 +97,10 @@ class second_generation(object):
         self.log('Load Synapse', file_name)
         file_object = open(file_name, 'r')
         self.synapse = pickle.load(file_object)
+
+# TODO: Make Synapses scale appropriatly
+# TODO: Linear Mapping function to map input and output arrays to [-1, 1]
+# TODO: Log version of above
+# TODO: third_generation.py:
+# TODO: Gradient Descent
+# TODO: Hinton's Dropout
