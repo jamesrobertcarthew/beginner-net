@@ -4,15 +4,14 @@ from second_generation import second_generation
 #########################################################
 import os # not neccesary, just a useful delineator :-P #
 # comment this if you have no sense of humour           #
-os.system('echo Neural Network Go! | cowsay | lolcat')  #
+os.system('echo Go, Neural Network, Go! | cowsay | lolcat')  #
 #########################################################
 
 # input dataset
-data_in = np.array([[0,0,1],[0,1,1],[1,0,1],[1,1,1]])
+data_in = np.array([[0,0,1,0],[0,1,1,0],[1,0,1,1],[1,1,1,1]])
 
 # output dataset
 desired_output = np.array([[0, 1, 1, 1],[1, 0, 1, 0],[1, 1, 1, 1],[0, 0, 0, 1]])
-# desired_output = np.array([[0, 1],[1, 0],[1, 1],[0, 0]])
 
 # number of layers
 layer_count = 5

@@ -56,9 +56,8 @@ class second_generation(object):
         self.layer_count = layer_count
         self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
         for i in xrange(self.layer_count):
-            self.synapse.append(2*np.random.random((self.data_in.shape[0], self.desired_output.shape[1])) - 1)
-            if self.layer_count <= 3:
-                self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
+            self.synapse.append(2*np.random.random((self.desired_output.shape[0], self.desired_output.shape[1])) - 1)
+            self.synapse.append(2*np.random.random((self.desired_output.shape[1], self.desired_output.shape[0])) - 1)
         layer = [None] * (self.layer_count)
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
@@ -99,6 +98,7 @@ class second_generation(object):
         self.synapse = pickle.load(file_object)
 
 # TODO: Make Synapses scale appropriatly
+# TODO: Create a sequential training method and rename 'train' to 'batch_train' or something similar
 # TODO: Linear Mapping function to map input and output arrays to [-1, 1]
 # TODO: Log version of above
 # TODO: third_generation.py:
