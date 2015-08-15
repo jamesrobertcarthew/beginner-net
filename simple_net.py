@@ -32,10 +32,14 @@ class simple_net(object):
         self.verbose = True
         scaled_data_out = (self.dataset_gain*layer[self.layer_count-1]) - self.dataset_bias
         scaled_desired_out = (self.dataset_gain * self.desired_output) - self.dataset_bias
+        error = scaled_desired_out - scaled_data_out
         self.log('Net Output', layer[self.layer_count-1])
         self.log('Desired Output', self.desired_output)
         self.log('Scaled Net Output', scaled_data_out)
         self.log('Scaled Desired Output', scaled_desired_out)
+        self.log('Error', error)
+        if np.nanmax(error) < 0.1 and np.nanmin(error) < 0.1:
+            self.log('Good Enough')
         self.verbose = store_verbose_setting
         return(layer[self.layer_count-1], scaled_data_out)
 
