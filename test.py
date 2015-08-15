@@ -27,8 +27,8 @@ iterations = 50000
 
 my_net.train(layer_count, iterations)
 
-# my_net.save_synapse('atest.synapse')
-#
-# my_net.load_synapse('atest.synapse')
-#
-# my_net.run(data_in, layer_count, iterations)
+my_net.save_synapse('atest.synapse')
+
+my_net.load_synapse('atest.synapse')
+
+my_net.run(data_in, layer_count, iterations)

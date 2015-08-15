@@ -28,6 +28,7 @@ class simple_net(object):
 
     # Output the result and desired output for comparison
     def get_result(self, layer):
+        store_verbose_setting = self.verbose
         self.verbose = True
         scaled_data_out = (self.dataset_gain*layer[self.layer_count-1]) - self.dataset_bias
         scaled_desired_out = (self.dataset_gain * self.desired_output) - self.dataset_bias
@@ -35,6 +36,7 @@ class simple_net(object):
         self.log('Desired Output', self.desired_output)
         self.log('Scaled Net Output', scaled_data_out)
         self.log('Scaled Desired Output', scaled_desired_out)
+        self.verbose = store_verbose_setting
         return(layer[self.layer_count-1], scaled_data_out)
 
 
@@ -109,7 +111,7 @@ class simple_net(object):
         layer[0] = data_in
         for i in xrange(iterations):
             layer = self.forward_propagation(layer, i)
-        self.show_result(layer)
+        self.get_result(layer)
         return layer[self.layer_count-1]
 
     # Save Synapse for later use
