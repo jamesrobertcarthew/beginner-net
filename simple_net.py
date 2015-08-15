@@ -1,7 +1,7 @@
 import numpy as np
 import pickle
 
-class second_generation(object):
+class simple_net(object):
 
     # Setup Class Variables
     def __init__(self, seed=1, verbose=False):
@@ -27,9 +27,16 @@ class second_generation(object):
             print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
     # Output the result and desired output for comparison
-    def show_result(self, layer):
+    def get_result(self, layer):
+        self.verbose = True
+        scaled_data_out = (self.dataset_gain*layer[self.layer_count-1]) - self.dataset_bias
+        scaled_desired_out = (self.dataset_gain * self.desired_output) - self.dataset_bias
         self.log('Net Output', layer[self.layer_count-1])
         self.log('Desired Output', self.desired_output)
+        self.log('Scaled Net Output', scaled_data_out)
+        self.log('Scaled Desired Output', scaled_desired_out)
+        return(layer[self.layer_count-1], scaled_data_out)
+
 
     # Sigmoid Function maps input to values between 0 and 1
     def sigmoid(self, x):
@@ -90,7 +97,7 @@ class second_generation(object):
             layer = self.forward_propagation(layer, i)
             layer, delta, error = self.backpropagation(layer, delta, error, i)
             self.update_synapses(layer, delta)
-        self.show_result(layer)
+        self.get_result(layer)
 
     # Run Net, Requires a Synapse Array
     def run(self, data_in, layer_count, iterations):
@@ -130,6 +137,7 @@ class second_generation(object):
         self.log('Scaled Data In', self.data_in)
         self.log('Original Desired Output', desired_output)
         self.log('Scaled Desired Output', self.desired_output)
+
 # TODO: Create a sequential training method and rename 'train' to 'batch_train' or something similar
 # TODO: Create a Map Scale version of linear dataset scale function
 # TODO: third_generation.py:
