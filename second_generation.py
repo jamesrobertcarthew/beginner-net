@@ -11,6 +11,8 @@ class second_generation(object):
         self.layer_count = None
         self.random = np.random.seed(seed)
         self.synapse = []
+        self.dataset_gain = 1
+        self.dataset_bias = 0
 
     # Set Float Precision in Logging
     def do_logging_prettier(self, enable):
@@ -24,23 +26,16 @@ class second_generation(object):
         if self.verbose is True:
             print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
-    # Output the result and perform a quick'n'dirty check (cause looking at Matrixes is Hard!)
+    # Output the result and desired output for comparison
     def show_result(self, layer):
-        if self.verbose is True:
-            self.log('Net Output', layer[self.layer_count-1])
-            rounded_array = np.around(layer[self.layer_count-1])
-            self.log('Rounded Output', rounded_array)
-            self.log('Desired Output', self.desired_output)
-            if np.array_equal(rounded_array, self.desired_output) is True:
-                self.log('It worked!',':-)')
-            else:
-                self.log('Sorry, try again',':-(')
+        self.log('Net Output', layer[self.layer_count-1])
+        self.log('Desired Output', self.desired_output)
 
     # Sigmoid Function maps input to values between 0 and 1
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
 
-    # Derivative of Sigmoid gives measure of confidence to be applied to calculated error furing training
+    # Derivative of Sigmoid gives measure of confidence to be applied to calculated error during training
     def derivative_of_sigmoid(self, layer):
         return layer * (1 - layer)
 
@@ -51,6 +46,7 @@ class second_generation(object):
         self.log('Layer {!s}'.format(0), layer[0])
         self.log('Synapse {!s}'.format(0), self.synapse[0])
         for j in range(0, self.layer_count-1):
+            # Prediction using synapse values
             layer[j+1] = self.sigmoid(np.dot(layer[j], self.synapse[j]))
             self.log('Layer {!s}'.format(j+1), layer[j+1])
             self.log('Synapse {!s}'.format(j+1), self.synapse[j+1])
@@ -65,6 +61,7 @@ class second_generation(object):
         self.log('Delta {!s}'.format(self.layer_count-1), delta[self.layer_count-1])
         for j in reversed(range(0, self.layer_count-1)):
             error[j] = np.dot(delta[j+1], self.synapse[j].T)
+            # Reduce the error of high confidence predictions
             delta[j] = error[j] * self.derivative_of_sigmoid(layer[j])
             self.log('Error {!s}'.format(j), error[j])
         return layer, delta, error
@@ -76,10 +73,11 @@ class second_generation(object):
             self.synapse[j] += np.dot(layer[j].T, delta[j+1])
 
     # Loop for Full Batch Backpropgation Training
-    def train(self, data_in, desired_output, layer_count, iterations):
+    def train(self, layer_count, iterations, data_in=None, desired_output=None):
         self.log('Entering Training Loop')
-        self.data_in = data_in
-        self.desired_output = desired_output
+        if data_in is not None or desired_output is not None:
+            self.data_in = data_in
+            self.desired_output = desired_output
         self.layer_count = layer_count
         self.synapse.append(2*np.random.random((self.data_in.shape[1], self.desired_output.shape[0])) - 1)
         for i in xrange(self.layer_count):
@@ -119,10 +117,21 @@ class second_generation(object):
         file_object = open(file_name, 'r')
         self.synapse = pickle.load(file_object)
 
-# TODO: Make Synapses scale appropriatly - I am too superstitious to cross this one off..
+    # Scale input and output datasets to (0,1) linearly using scaled_data = k * data - bias
+    def scale_dataset_linear(self, data_in, desired_output):
+        self.log('Linearly Scale Data')
+        self.dataset_gain = np.ceil(max(np.nanmax(data_in), np.nanmax(desired_output)) - min(np.nanmin(data_in), np.nanmin(desired_output)))
+        self.log('Dataset Gain', self.dataset_gain)
+        self.dataset_bias = np.abs(min(np.nanmin(data_in), np.nanmin(desired_output)))
+        self.log('Dataset Bias', self.dataset_bias)
+        self.data_in = (data_in + self.dataset_bias) / self.dataset_gain
+        self.desired_output = (desired_output + self.dataset_bias) / self.dataset_gain
+        self.log('Original Data In', data_in)
+        self.log('Scaled Data In', self.data_in)
+        self.log('Original Desired Output', desired_output)
+        self.log('Scaled Desired Output', self.desired_output)
 # TODO: Create a sequential training method and rename 'train' to 'batch_train' or something similar
-# TODO: Linear Mapping function to map input and output arrays to [-1, 1]
-# TODO: Log version of above
+# TODO: Create a Map Scale version of linear dataset scale function
 # TODO: third_generation.py:
 # TODO: Gradient Descent
 # TODO: Hinton's Dropout

@@ -7,9 +7,9 @@ import os # not neccesary, just a useful delineator :-P #
 os.system('echo Go, Neural Network, Go! | cowsay | lolcat')  #
 #########################################################
 
-data_in = np.array([[0,0,1,0],[0,1,1,0],[1,0,1,1],[1,1,1,1]])
+data_in = np.array([[0,0,-2,0],[0,1,1,0],[1,0,8,1],[1,1,1,1]])
 
-desired_output = np.array([[0, 1, 1, 1],[1, 0, 1, 0],[1, 1, 1, 1],[0, 0, 0, 1]])
+desired_output = np.array([[0, 1, 1, 1],[1, 0, 1, 0],[1, -1, 1, 1],[0, 0, 0, 1]])
 
 layer_count = 5
 
@@ -19,14 +19,16 @@ verbose = True
 
 my_net = second_generation(seed, verbose)
 
+my_net.scale_dataset_linear(data_in, desired_output)
+
 my_net.do_logging_prettier(True)
 
-iterations = 500
+iterations = 5000
 
-my_net.train(data_in, desired_output, layer_count, iterations)
+my_net.train(layer_count, iterations)
 
-my_net.save_synapse('test.synapse')
+my_net.save_synapse('atest.synapse')
 
-my_net.load_synapse('test.synapse')
+my_net.load_synapse('atest.synapse')
 
 my_net.run(data_in, layer_count, iterations)
