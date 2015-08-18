@@ -6,13 +6,14 @@ class simple_net(object):
     # Setup Class Variables
     def __init__(self, seed=1, verbose=False):
         self.verbose = verbose
-        self.data_in = None
-        self.desired_output = None
+        self.data_in = []
+        self.desired_output = []
         self.layer_count = None
         self.random = np.random.seed(seed)
         self.synapse = []
         self.dataset_gain = 1
         self.dataset_bias = 0
+        self.represented_as_ascii = False
 
     # Set Float Precision in Logging
     def do_logging_prettier(self, enable):
@@ -39,7 +40,15 @@ class simple_net(object):
         self.log('Scaled Desired Output', scaled_desired_out)
         self.log('Error', error)
         if np.nanmax(error) < 0.1 and np.nanmin(error) < 0.1:
-            self.log('Good Enough')
+            self.log('Max Error Less than 10%')
+        if self.represented_as_ascii is True:
+            output_string = []
+            for row in scaled_data_out:
+                a_string = ""
+                for value in row:
+                    a_string += (chr(int(value+0.1))) # HACK: Values occasionally approac limit .999
+                output_string.append(a_string)
+            self.log('Ascii Net Result',output_string)
         self.verbose = store_verbose_setting
         return(layer[self.layer_count-1], scaled_data_out)
 
@@ -143,6 +152,32 @@ class simple_net(object):
         self.log('Scaled Data In', self.data_in)
         self.log('Original Desired Output', desired_output)
         self.log('Scaled Desired Output', self.desired_output)
+
+    # Read in Ascii values and scale input / output for text
+    # NB: currently requires all values in input strings to be same length
+    def digest_ascii(self, data_in, desired_output):
+        self.log('Digest Ascii Array', str(data_in) +'\n' + str(desired_output))
+        self.represented_as_ascii = True
+        self.dataset_gain = 127
+        #TODO: DRY this... derp
+        for data in data_in:
+            for cell in data:
+                catcher = []
+                for character in cell:
+                    catcher.append(ord(character)/127.0) # won't accept nul
+            self.data_in.append(np.asarray(catcher))
+
+        for data in desired_output:
+            for cell in data:
+                catcher = []
+                for character in cell:
+                    catcher.append(ord(character)/127.0) # won't accept nul
+                self.desired_output.append(np.asarray(catcher))
+
+        self.data_in = np.asarray(self.data_in)
+        self.desired_output = np.asarray(self.desired_output)
+        self.log('Mapped Ascii Data In', self.data_in)
+        self.log('Mapped Ascii Desired Output', self.desired_output)
 
 # TODO: Create a sequential training method and rename 'train' to 'batch_train' or something similar
 # TODO: Create a Map Scale version of linear dataset scale function
