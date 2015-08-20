@@ -45,6 +45,8 @@ class simple_net(object):
         output = func()
         if np.nanmax(error) < 0.1 and np.nanmin(error) < 0.1:
             self.log('Max Error Less than 10%')
+        else:
+            self.log('Error Greater than 10%', error)
         self.verbose = store_verbose_setting
         return output
 

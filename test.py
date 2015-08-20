@@ -40,3 +40,5 @@ my_net.save_synapse('atest.synapse')
 my_net.load_synapse('atest.synapse')
 
 # my_net.run(data_in, layer_count, iterations)
+
+# TODO: create more explicit input for my_net.run so I can start some large dataset randomness stuff
