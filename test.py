@@ -29,7 +29,7 @@ my_net.digest_ascii(chars_in, desired_chars_out)
 
 # my_net.scale_dataset_linear(data_in, desired_output)
 
-iterations = 500000
+iterations = 200000
 
 my_net.train(layer_count, iterations)
 
@@ -37,4 +37,4 @@ my_net.save_synapse('atest.synapse')
 
 my_net.load_synapse('atest.synapse')
 
-# my_net.run(data_in, layer_count, iterations)
+my_net.run(data_in, layer_count, iterations)

@@ -14,6 +14,7 @@ class simple_net(object):
         self.dataset_gain = 1
         self.dataset_bias = 0
         self.represented_as_ascii = False
+        self.desired_ascii_output = None
 
     # Set Float Precision in Logging
     def do_logging_prettier(self, enable):
@@ -48,9 +49,9 @@ class simple_net(object):
                 for value in row:
                     a_string += (chr(int(value+0.1))) # HACK: Values occasionally approac limit .999
                 output_string.append(a_string)
+            self.log('Ascii Desired Output', self.desired_ascii_output)
             self.log('Ascii Net Result',output_string)
         self.verbose = store_verbose_setting
-        return(layer[self.layer_count-1], scaled_data_out)
 
 
     # Sigmoid Function maps input to values between 0 and 1
@@ -158,6 +159,7 @@ class simple_net(object):
     def digest_ascii(self, data_in, desired_output):
         self.log('Digest Ascii Array', str(data_in) +'\n' + str(desired_output))
         self.represented_as_ascii = True
+        self.desired_ascii_output = desired_output
         self.dataset_gain = 127
         #TODO: DRY this... derp
         for data in data_in:
@@ -173,7 +175,6 @@ class simple_net(object):
                 for character in cell:
                     catcher.append(ord(character)/127.0) # won't accept nul
                 self.desired_output.append(np.asarray(catcher))
-
         self.data_in = np.asarray(self.data_in)
         self.desired_output = np.asarray(self.desired_output)
         self.log('Mapped Ascii Data In', self.data_in)
