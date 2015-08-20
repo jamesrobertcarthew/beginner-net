@@ -27,7 +27,7 @@ my_net.do_logging_prettier()
 
 my_net.digest_ascii(chars_in, desired_chars_out)
 
-# my_net.scale_dataset_linear(data_in, desired_output)
+# my_net.normalise_dataset_linear(data_in, desired_output)
 
 iterations = 200000
 

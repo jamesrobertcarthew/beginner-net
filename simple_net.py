@@ -10,6 +10,7 @@ class simple_net(object):
         self.data_in = []
         self.desired_output = []
         self.layer_count = None
+        self.actual_raw_output = None
         self.random = np.random.seed(seed)
         self.synapse = []
         self.dataset_gain = 1
@@ -23,36 +24,46 @@ class simple_net(object):
         np.set_printoptions(formatter={'float': '{: 0.3f}'.format})
 
     # Guess what this does
-    def log(self, a_string='Value', data=''):
+    def log(self, a_string='Value', data=None):
         if self.verbose is True:
-            print '\n{!s}: \n{!s}'.format(a_string, str(data))
+            if data is None:
+                print '\n{!s}\n'.format(a_string)
+            else:
+                print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
     # Output the result and desired output for comparison
-    def give_result(self, layer):
+    def give_result(self):
         store_verbose_setting = self.verbose
         self.verbose = True
-        scaled_data_out = (self.dataset_gain*layer[self.layer_count-1]) - self.dataset_bias
-        scaled_desired_out = (self.dataset_gain * self.desired_output) - self.dataset_bias
-        error = scaled_desired_out - scaled_data_out
-        self.log('Net Output', layer[self.layer_count-1])
-        self.log('Desired Output', self.desired_output)
-        self.log('Scaled Net Output', scaled_data_out)
-        self.log('Scaled Desired Output', scaled_desired_out)
-        self.log('Error', error)
+        error = self.desired_output - self.actual_raw_output
+        data_mode = {
+            'RAW': self.get_raw_output,
+            'SCALED': self.get_scaled_output,
+            'ASCII': self.get_ascii_output
+        }
+        func = data_mode.get(self.mode, lambda: "nothing")
+        output = func()
         if np.nanmax(error) < 0.1 and np.nanmin(error) < 0.1:
             self.log('Max Error Less than 10%')
+        self.verbose = store_verbose_setting
+        return output
+
+    def get_raw_output(self):
+        self.log('Net Output', self.actual_raw_output)
+        self.log('Desired Output', self.desired_output)
+        return self.actual_raw_output
+
+    def get_scaled_output(self):
+        self.log('Scaled Net Output', self.denormalise_dataset_linear(self.actual_raw_output))
+        self.log('Scaled Desired Output', self.denormalise_dataset_linear(self.desired_output))
+        return self.denormalise_dataset_linear(self.actual_raw_output)
+
+    def get_ascii_output(self):
+        scaled_data_out = self.denormalise_dataset_linear(self.actual_raw_output)
+        scaled_desired_out = self.denormalise_dataset_linear(self.desired_output)
         self.log('Ascii Net Output', self.float_to_ascii(scaled_data_out))
         self.log('Ascii Desired Output', self.float_to_ascii(scaled_desired_out))
-        self.verbose = store_verbose_setting
-
-    def get_raw_output(self, layer):
-        pass
-
-    def get_scaled_output(self, layer):
-        pass
-
-    def get_ascii_output(self, layer):
-        pass
+        return self.float_to_ascii(scaled_data_out)
 
     # Sigmoid Function maps input to values between 0 and 1
     def sigmoid(self, x):
@@ -113,13 +124,12 @@ class simple_net(object):
             layer = self.forward_propagation(layer, i)
             layer, delta, error = self.backpropagation(layer, delta, error, i)
             self.update_synapses(layer, delta)
-        self.give_result(layer)
+        self.actual_raw_output = layer[self.layer_count-1]
+        self.give_result()
 
     # Run Net, Requires a Synapse Array
     def run(self, data_in, layer_count, iterations):
         store_verbose_setting = self.verbose
-        if verbose is not None:
-            self.verbose = verbose
         if self.synapse is None:
             self.log('Error', 'Please Load a Synapse')
             exit()
@@ -128,9 +138,9 @@ class simple_net(object):
         layer[0] = data_in
         for i in xrange(iterations):
             layer = self.forward_propagation(layer, i)
-        self.verbose = store_verbose_setting
-        self.give_result(layer)
-        return layer[self.layer_count-1]
+        self.actual_raw_output = layer[self.layer_count-1]
+        self.give_result()
+        return self.actual_raw_output
 
     # Save Synapse for later use
     def save_synapse(self, file_name):
@@ -145,7 +155,7 @@ class simple_net(object):
         self.synapse = pickle.load(file_object)
 
     # Scale input and output datasets to (0,1) linearly using scaled_data = k * data - bias
-    def scale_dataset_linear(self, data_in, desired_output):
+    def normalise_dataset_linear(self, data_in, desired_output):
         self.mode = 'SCALED'
         self.log('Linearly Scale Data')
         self.dataset_gain = np.ceil(max(np.nanmax(data_in), np.nanmax(desired_output)) - min(np.nanmin(data_in), np.nanmin(desired_output)))
@@ -158,6 +168,10 @@ class simple_net(object):
         self.log('Scaled Data In', self.data_in)
         self.log('Original Desired Output', desired_output)
         self.log('Scaled Desired Output', self.desired_output)
+
+    # Unscale the dataset after net
+    def denormalise_dataset_linear(self, data):
+        return (self.dataset_gain * data) - self.dataset_bias
 
     # Read in Ascii values and scale input / output for text
     # NB: currently requires all values in input strings to be same length
