@@ -18,6 +18,7 @@ with open('README.md', 'wb') as doc:
                     line = line.lstrip().replace('_', '\_')
                     if line[0:6] == 'import':
                         doc.write('* {!s}\n'.format(line))
+                doc.write('\n')
                 for line in lines:
                     line = line.lstrip().replace('_', '\_')
                     if line[0:3] == 'def':

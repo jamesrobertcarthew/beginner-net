@@ -1,8 +1,8 @@
-#Simple Net
+# Simple Net
 Adventures in Machine Learning!!!
-##[First Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/first-generation)
+## [First Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/first-generation)
 Converts [iamtrask](http://iamtrask.github.io/)'s 2 layer neural net into a class.
-##[Second Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/second-generation)
+## [Second Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/second-generation)
 Provides a basic scalable class to create a backpropagation net with nothing fancy in terms of optimisation. Python Pickle lets me save and load the self.synapse values. Input, Desired Output and Layer count can be set (within reason).
 #Overview:
 ##simple_net.py
@@ -10,6 +10,7 @@ Provides a basic scalable class to create a backpropagation net with nothing fan
 * import pickle
 * import os
 * import inspect
+
 ###\_\_init\_\_(self, seed=1, verbose=False):
 Setup Class Variables
 ###set\_pretty\_log(self):
@@ -62,3 +63,4 @@ Convert a normalised Float array to ascii characters
 * gradient descent and drop output
 * CUDA dot product
 * Seperate net from main loop via sockets
+
