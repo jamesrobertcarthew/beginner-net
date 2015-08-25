@@ -10,51 +10,53 @@ Provides a basic scalable class to create a backpropagation net with nothing fan
 * import pickle
 
 ####\_\_init\_\_(self, seed=1, verbose=False):
-Setup Class Variables
 ####set\_pretty\_log(self):
-Set Float Precision in Logging
+* Set Float Precision in Logging
 ####log(self, a\_string='Value', data=None):
 ####give\_result(self):
-Output the result and desired output for comparison
+* Output the result in the correct format
 ####get\_raw\_output(self):
-self.log('Desired Output', self.desired\_output)
+* self.log('Desired Output', self.desired\_output)
 ####get\_scaled\_output(self):
-self.log('Scaled Desired Output', self.apply\_gain\_and\_bias(self.desired\_output))
+* self.log('Scaled Desired Output', self.apply\_gain\_and\_bias(self.desired\_output))
 ####get\_ascii\_output(self):
-self.log('Ascii Desired Output', self.float\_to\_ascii(scaled\_desired\_out))
+* self.log('Ascii Desired Output', self.float\_to\_ascii(scaled\_desired\_out))
 ####sigmoid(self, x):
-Sigmoid Function maps input to values between 0 and 1
+* Sigmoid Function maps input to values between 0 and 1
 ####derivative\_of\_sigmoid(self, layer):
-Derivative of Sigmoid gives measure of confidence to be applied to calculated error during training
+* Derivative of Sigmoid gives measure of confidence to be applied to calculated error during training
 ####forward\_propagation(self, layer, iteration=0):
-Full Batch Prediction Function
-Prediction using synapse values
+* Full Batch Prediction Function
+* Prediction using synapse values
 ####backpropagation(self, layer, delta, error, iteration=0):
-Full Batch Update Backpropgation Function
-Reduce the error of high confidence predictions
+* Full Batch Update Backpropgation Function
+* Reduce the error of high confidence predictions
 ####update\_synapses(self, layer, delta):
-Update the Synapses based on the confidence of the value. Less confident => 'more updated'
+* Update the Synapses based on the confidence of the value. Less confident => 'more updated'
 ####initialise\_synapse(self):
-Initialise the Synapse structure
-####train(self, layer\_count, iterations, data\_in=None, desired\_output=None):
-Loop for Full Batch Backpropgation Training
+* Initialise the Synapse structure
+####over\_train(self, layer\_count, iterations, data\_in=None, desired\_output=None):
+* Full Batch Backpropgation Training with set iterations for overtraining and such
+####minimally\_train(self, layer\_count, acceptable\_error, data\_in=None, desired\_output=None):
+* Full Batch Backpropgation Training that will stop when maximum error is less than acceptable\_error
+* need to make a convergence check on the error array during Backpropgation
 ####run(self, layer\_count, iterations, data\_in=None):
-Run Neural Net, Requires a Synapse Array
+* Run Neural Net, Requires a Synapse Array
 ####save\_synapse(self, file\_name):
-Save Synapse for later use
+* Save Synapse for later use
 ####load\_synapse(self, file\_name):
-Load a Synapse for reuse
+* Load a Synapse for reuse
 ####digest\_float(self, data\_in, desired\_output):
-Scale input and output datasets to (0,1) linearly using scaled\_data = k * data - bias
+* Scale input and output datasets to (0,1) linearly using scaled\_data = k * data - bias
 ####apply\_gain\_and\_bias(self, data):
-Unscale the dataset after net
+* Unscale the dataset after net
 ####digest\_ascii(self, data\_in, desired\_output=None):
-Read in Ascii values and scale input / output for text
-NB: currently requires all values in input strings to be same length
+* Read in Ascii values and scale input / output for text
+* NB: currently requires all values in input strings to be same length
 ####ascii\_to\_float(self, ascii\_array):
-Convert an ascii array to a (normalised) float array
+* Convert an ascii array to a (normalised) float array
 ####float\_to\_ascii(self, data):
-Convert a normalised Float array to ascii characters
+* Convert a normalised Float array to ascii characters
 ###TO DO:
 * lets make this thing into more, smaller files and stuff... is getting out of control!!!
 * Make the default mode 'run til convergence' with option to overtrain by setting iteration value (think about this and commit before hand cause you WILL fuck it up

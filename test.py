@@ -16,6 +16,7 @@ layer_count = 5
 seed = 1
 verbose = True
 iterations = 200000
+acceptable_error = 0.05
 # SETUP SIMPLE NET
 my_net = simple_net(seed, verbose)
 my_net.set_pretty_log()
@@ -25,7 +26,8 @@ my_net.digest_ascii(chars_in, desired_chars_out)
 # my_net.digest_float(data_in, desired_output)
 my_net.verbose = False  # just cause it talks a lot and is slow with verbose training
 # TRAIN
-my_net.train(layer_count, iterations)
+# my_net.minimally_train(layer_count, acceptable_error)
+my_net.over_train(layer_count, iterations)
 # SAVE SYNAPSE AND RELOAD SYNAPSE
 my_net.save_synapse('atest.synapse')
 my_net.load_synapse('atest.synapse')

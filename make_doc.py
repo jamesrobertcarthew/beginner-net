@@ -31,5 +31,6 @@ with open('README.md', 'wb') as doc:
                             doc.write('*{!s}\n'.format(line.replace('# TODO:', '')))
                         else:
                             already_todo = False
-                            doc.write('{!s}\n'.format(line.replace('# ', '')))
+                            doc.write('* {!s}\n'.format(line.replace('# ', '')))
             doc.write('\n')
+doc.close()

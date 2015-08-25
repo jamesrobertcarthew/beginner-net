@@ -5,14 +5,15 @@ import pickle
 class simple_net(object):
 
     def __init__(self, seed=1, verbose=False):
-        # Setup Class Variables
         self.verbose = verbose
         self.data_in = []
         self.desired_output = []
         self.layer_count = None
         self.actual_raw_output = None
         self.random = np.random.seed(seed)
+        self.acceptable_error = 1
         self.synapse = []
+        self.converged = False
         self.dataset_gain = 1
         self.dataset_bias = 0
         self.mode = 'RAW'  # ,SCALED, ASCII, ...
@@ -31,7 +32,7 @@ class simple_net(object):
                 print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
     def give_result(self):
-        # Output the result and desired output for comparison
+        # Output the result in the correct format
         store_verbose_setting = self.verbose
         self.verbose = True
         error = self.desired_output - self.actual_raw_output
@@ -104,8 +105,8 @@ class simple_net(object):
             self.synapse.append(2*np.random.random((self.desired_output.shape[0], self.desired_output.shape[1])) - 1)
             self.synapse.append(2*np.random.random((self.desired_output.shape[1], self.desired_output.shape[0])) - 1)
 
-    def train(self, layer_count, iterations, data_in=None, desired_output=None):
-        # Loop for Full Batch Backpropgation Training
+    def over_train(self, layer_count, iterations, data_in=None, desired_output=None):
+        # Full Batch Backpropgation Training with set iterations for overtraining and such
         if data_in is not None or desired_output is not None:
             self.data_in = data_in
             self.desired_output = desired_output
@@ -116,6 +117,28 @@ class simple_net(object):
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
         for i in xrange(iterations):
+            layer = self.forward_propagation(layer, i)
+            layer, delta, error = self.backpropagation(layer, delta, error, i)
+            self.update_synapses(layer, delta)
+        self.actual_raw_output = layer[self.layer_count-1]
+        self.give_result()
+
+    def minimally_train(self, layer_count, acceptable_error, data_in=None, desired_output=None):
+        # Full Batch Backpropgation Training that will stop when maximum error is less than acceptable_error
+        self.acceptable_error = acceptable_error / self.dataset_gain
+        if data_in is not None or desired_output is not None:
+            self.data_in = data_in
+            self.desired_output = desired_output
+        self.layer_count = layer_count
+        if self.synapse == []:
+            self.initialise_synapse()
+        layer = [None] * (self.layer_count)
+        error = [None] * (self.layer_count)
+        delta = [None] * (self.layer_count)
+        self.converged = False
+        while self.converged is False:
+            # need to make a convergence check on the error array during Backpropgation
+            # also need to store iterations somehow -> probably pickle them
             layer = self.forward_propagation(layer, i)
             layer, delta, error = self.backpropagation(layer, delta, error, i)
             self.update_synapses(layer, delta)
@@ -142,6 +165,7 @@ class simple_net(object):
         # Save Synapse for later use
         file_object = open(file_name, 'wb')
         pickle.dump(self.synapse, file_object)
+        file_object.close()
 
     def load_synapse(self, file_name):
         # Load a Synapse for reuse
