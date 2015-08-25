@@ -15,7 +15,7 @@ with open('README.md', 'wb') as doc:
                 text = code.read()
                 lines = text.split('\n')
                 for line in lines:
-                    line = line.lstrip()
+                    line = line.lstrip().replace('_', '\_')
                     if line[0:6] == 'import':
                         doc.write('* {!s}\n'.format(line))
                 for line in lines:
@@ -30,5 +30,5 @@ with open('README.md', 'wb') as doc:
                             doc.write('*{!s}\n'.format(line.replace('# TODO:', '')))
                         else:
                             already_todo = False
-                            doc.write('{!s}\n'.format(line.replace('#', '')))
+                            doc.write('{!s}\n'.format(line.replace('# ', '')))
             doc.write('\n')
