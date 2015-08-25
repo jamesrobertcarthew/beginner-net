@@ -1,7 +1,5 @@
 import numpy as np
 import pickle
-import os
-import inspect
 
 
 class simple_net(object):
@@ -18,7 +16,6 @@ class simple_net(object):
         self.dataset_gain = 1
         self.dataset_bias = 0
         self.mode = 'RAW'  # ,SCALED, ASCII, ...
-        self.path = os.path.abspath(inspect.getfile(self.__class__))
 
     def set_pretty_log(self):
         # Set Float Precision in Logging
