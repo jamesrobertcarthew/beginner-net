@@ -18,7 +18,7 @@ verbose = True
 iterations = 200000
 # SETUP SIMPLE NET
 my_net = simple_net(seed, verbose)
-my_net.do_logging_prettier()
+my_net.set_pretty_log()
 
 # READ DATA FOR TRAINING
 my_net.digest_ascii(chars_in, desired_chars_out)
