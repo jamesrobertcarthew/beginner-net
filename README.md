@@ -8,8 +8,6 @@ Provides a basic scalable class to create a backpropagation net with nothing fan
 ##simple_net.py
 * import numpy as np
 * import pickle
-* import os
-* import inspect
 
 ####\_\_init\_\_(self, seed=1, verbose=False):
 Setup Class Variables
