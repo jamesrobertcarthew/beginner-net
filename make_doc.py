@@ -21,11 +21,11 @@ with open('README.md', 'wb') as doc:
                 for line in lines:
                     line = line.lstrip().replace('_', '\_')
                     if line[0:3] == 'def':
-                        doc.write('## {!s}\n'.format(line.replace('def ', '')))
+                        doc.write('###{!s}\n'.format(line.replace('def ', '')))
                     if line[0:1] == '#':
                         if line[0:7] == '# TODO:':
                             if already_todo is False:
-                                doc.write('## TO DO:\n')
+                                doc.write('##TO DO:\n')
                                 already_todo = True
                             doc.write('*{!s}\n'.format(line.replace('# TODO:', '')))
                         else:
