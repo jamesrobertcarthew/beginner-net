@@ -11,11 +11,12 @@ class simple_net(object):
         self.layer_count = None
         self.actual_raw_output = None
         self.random = np.random.seed(seed)
-        self.acceptable_error = 1
+        self.acceptable_error = 0
         self.synapse = []
         self.converged = False
         self.dataset_gain = 1
         self.dataset_bias = 0
+        self.iterations = 0
         self.mode = 'RAW'  # ,SCALED, ASCII, ...
 
     def set_pretty_log(self):
@@ -31,7 +32,7 @@ class simple_net(object):
             else:
                 print '\n{!s}: \n{!s}'.format(a_string, str(data))
 
-    def give_result(self):
+    def give_result(self, analyse):
         # Output the result in the correct format
         store_verbose_setting = self.verbose
         self.verbose = True
@@ -43,11 +44,12 @@ class simple_net(object):
         }
         func = data_mode.get(self.mode, lambda: "nothing")
         output = func()
-        if np.nanmax(error) < 0.1 and np.nanmin(error) < 0.1:
-            self.log('Max Error Less than 10%')
-        else:
-            self.log('Error Greater than 10%', error)
-        self.verbose = store_verbose_setting
+        if analyse:
+            if np.nanmax(error) < 0.1 and np.nanmin(error) < 0.1:
+                self.log('Max Error Less than 10%')
+            else:
+                self.log('Error Greater than 10%', error)
+            self.verbose = store_verbose_setting
         return output
 
     def get_raw_output(self):
@@ -87,10 +89,16 @@ class simple_net(object):
         # Full Batch Update Backpropgation Function
         error[self.layer_count-1] = self.desired_output - layer[self.layer_count-1]
         delta[self.layer_count-1] = error[self.layer_count-1] * self.derivative_of_sigmoid(layer[self.layer_count-1])
+        accumulative_error = 0
         for j in reversed(range(0, self.layer_count-1)):
             error[j] = np.dot(delta[j+1], self.synapse[j].T)
+            accumulative_error += np.sum(error[j])
             # Reduce the error of high confidence predictions
             delta[j] = error[j] * self.derivative_of_sigmoid(layer[j])
+        # self.log('Accumulative Error Squared {!s}'.format(iteration), accumulative_error * accumulative_error)
+        # self.log('Acceptable Error Squared', self.acceptable_error)
+        # if accumulative_error*accumulative_error < self.acceptable_error:
+        #     self.converged = True
         return layer, delta, error
 
     def update_synapses(self, layer, delta):
@@ -105,14 +113,17 @@ class simple_net(object):
             self.synapse.append(2*np.random.random((self.desired_output.shape[0], self.desired_output.shape[1])) - 1)
             self.synapse.append(2*np.random.random((self.desired_output.shape[1], self.desired_output.shape[0])) - 1)
 
-    def over_train(self, layer_count, iterations, data_in=None, desired_output=None):
+    def over_train(self, iterations, layer_count=None, data_in=None, desired_output=None):
         # Full Batch Backpropgation Training with set iterations for overtraining and such
-        if data_in is not None or desired_output is not None:
+        if data_in is not None:
             self.data_in = data_in
+        if desired_output is not None:
             self.desired_output = desired_output
-        self.layer_count = layer_count
+        if layer_count is not None:
+            self.layer_count = layer_count
         if self.synapse == []:
             self.initialise_synapse()
+        self.iterations = iterations
         layer = [None] * (self.layer_count)
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
@@ -121,56 +132,67 @@ class simple_net(object):
             layer, delta, error = self.backpropagation(layer, delta, error, i)
             self.update_synapses(layer, delta)
         self.actual_raw_output = layer[self.layer_count-1]
-        self.give_result()
+        self.give_result(True)
 
-    def minimally_train(self, layer_count, acceptable_error, data_in=None, desired_output=None):
-        # Full Batch Backpropgation Training that will stop when maximum error is less than acceptable_error
-        self.acceptable_error = acceptable_error / self.dataset_gain
-        if data_in is not None or desired_output is not None:
+    def minimally_train(self, layer_count=None, data_in=None, desired_output=None):
+        # Full Batch Backpropgation Training that will stop when maximum error is less than the resolution of the training set
+        if data_in is not None:
             self.data_in = data_in
+        if desired_output is not None:
             self.desired_output = desired_output
+        if layer_count is not None:
+            self.layer_count = layer_count
         self.layer_count = layer_count
         if self.synapse == []:
             self.initialise_synapse()
+        self.acceptable_error = 0.0000000004
         layer = [None] * (self.layer_count)
         error = [None] * (self.layer_count)
         delta = [None] * (self.layer_count)
         self.converged = False
         while self.converged is False:
+            self.iterations += 1
             # need to make a convergence check on the error array during Backpropgation
             # also need to store iterations somehow -> probably pickle them
-            layer = self.forward_propagation(layer, i)
-            layer, delta, error = self.backpropagation(layer, delta, error, i)
+            layer = self.forward_propagation(layer, self.iterations)
+            layer, delta, error = self.backpropagation(layer, delta, error, self.iterations)
             self.update_synapses(layer, delta)
         self.actual_raw_output = layer[self.layer_count-1]
-        self.give_result()
+        self.give_result(True)
 
-    def run(self, layer_count, iterations, data_in=None):
+    def run(self, iterations=None, layer_count=None, data_in=None):
         # Run Neural Net, Requires a Synapse Array
         if data_in is not None:
             self.data_in = data_in
-        store_verbose_setting = self.verbose
+        if layer_count is not None:
+            self.layer_count = layer_count
+        if iterations is not None:
+            self.iterations = iterations
         if self.synapse == []:
+            self.log('Error', 'No Synapse Loaded')
             exit()
-        self.layer_count = layer_count
         layer = [None] * (self.layer_count)
         layer[0] = self.data_in
-        for i in xrange(iterations):
+        for i in xrange(self.iterations):
             layer = self.forward_propagation(layer, i)
         self.actual_raw_output = layer[self.layer_count-1]
-        self.give_result()
+        self.give_result(False)
         return self.actual_raw_output
 
-    def save_synapse(self, file_name):
+    def save_config(self, file_name):
         # Save Synapse for later use
         file_object = open(file_name, 'wb')
         pickle.dump(self.synapse, file_object)
+        pickle.dump(self.iterations, file_object)
+        pickle.dump(self.layer_count, file_object)
         file_object.close()
 
-    def load_synapse(self, file_name):
+    def load_config(self, file_name):
         # Load a Synapse for reuse
         file_object = open(file_name, 'r')
         self.synapse = pickle.load(file_object)
+        self.iterations = pickle.load(file_object)
+        self.layer_count = pickle.load(file_object)
 
     def digest_float(self, data_in, desired_output):
         # Scale input and output datasets to (0,1) linearly using scaled_data = k * data - bias
@@ -213,9 +235,3 @@ class simple_net(object):
                 a_string += (chr(int(value + 0.1)))  # HACK: Values occasionally approac limit .999
             string_representation.append(a_string)
         return np.asarray(string_representation)
-
-# TODO: lets make this thing into more, smaller files and stuff... is getting out of control!!!
-# TODO: Make the default mode 'run til convergence' with option to overtrain by setting iteration value (think about this and commit before hand cause you WILL fuck it up
-# TODO: gradient descent and drop output
-# TODO: CUDA dot product
-# TODO: Seperate net from main loop via sockets

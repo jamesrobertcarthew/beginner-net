@@ -3,7 +3,7 @@ Adventures in Machine Learning!!!
 ## [First Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/first-generation)
 Converts [iamtrask](http://iamtrask.github.io/)'s 2 layer neural net into a class.
 ## [Second Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/second-generation)
-Provides a basic scalable class to create a backpropagation net with nothing fancy in terms of optimisation. Python Pickle lets me save and load the self.synapse values. Input, Desired Output and Layer count can be set (within reason).
+Provides a basic scalable class to create a backpropagation net with nothing fancy in terms of optimisation. Python Pickle lets me save and load the configuration created by a training set. Input, Desired Output and Layer count can be set (within reason).
 #Overview:
 ##simple_net.py
 * import numpy as np
@@ -14,7 +14,7 @@ Provides a basic scalable class to create a backpropagation net with nothing fan
 Set Float Precision in Logging
 
 ####log(self, a\_string='Value', data=None):
-####give\_result(self):
+####give\_result(self, analyse):
 Output the result in the correct format
 
 ####get\_raw\_output(self):
@@ -42,29 +42,37 @@ Full Batch Update Backpropgation Function
 
 Reduce the error of high confidence predictions
 
+self.log('Accumulative Error Squared {!s}'.format(iteration), accumulative\_error * accumulative\_error)
+
+self.log('Acceptable Error Squared', self.acceptable\_error)
+
+if accumulative\_error*accumulative\_error < self.acceptable\_error:
+
+    self.converged = True
+
 ####update\_synapses(self, layer, delta):
 Update the Synapses based on the confidence of the value. Less confident => 'more updated'
 
 ####initialise\_synapse(self):
 Initialise the Synapse structure
 
-####over\_train(self, layer\_count, iterations, data\_in=None, desired\_output=None):
+####over\_train(self, iterations, layer\_count=None, data\_in=None, desired\_output=None):
 Full Batch Backpropgation Training with set iterations for overtraining and such
 
-####minimally\_train(self, layer\_count, acceptable\_error, data\_in=None, desired\_output=None):
-Full Batch Backpropgation Training that will stop when maximum error is less than acceptable\_error
+####minimally\_train(self, layer\_count=None, data\_in=None, desired\_output=None):
+Full Batch Backpropgation Training that will stop when maximum error is less than the resolution of the training set
 
 need to make a convergence check on the error array during Backpropgation
 
 also need to store iterations somehow -> probably pickle them
 
-####run(self, layer\_count, iterations, data\_in=None):
+####run(self, iterations=None, layer\_count=None, data\_in=None):
 Run Neural Net, Requires a Synapse Array
 
-####save\_synapse(self, file\_name):
+####save\_config(self, file\_name):
 Save Synapse for later use
 
-####load\_synapse(self, file\_name):
+####load\_config(self, file\_name):
 Load a Synapse for reuse
 
 ####digest\_float(self, data\_in, desired\_output):
@@ -84,10 +92,4 @@ Convert an ascii array to a (normalised) float array
 ####float\_to\_ascii(self, data):
 Convert a normalised Float array to ascii characters
 
-###TO DO:
-* lets make this thing into more, smaller files and stuff... is getting out of control!!!
-* Make the default mode 'run til convergence' with option to overtrain by setting iteration value (think about this and commit before hand cause you WILL fuck it up
-* gradient descent and drop output
-* CUDA dot product
-* Seperate net from main loop via sockets
 
