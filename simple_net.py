@@ -190,8 +190,4 @@ class simple_net(object):
             string_representation.append(a_string)
         return np.asarray(string_representation)
 
-# TODO: lets make this thing into more, smaller files and stuff... is getting out of control!!!
-# TODO: Make the default mode 'run til convergence' with option to overtrain by setting iteration value (think about this and commit before hand cause you WILL fuck it up
-# TODO: gradient descent and drop output
-# TODO: CUDA dot product
-# TODO: Seperate net from main loop via sockets
+      # Tensor Flow looks cool... i'll be back.
