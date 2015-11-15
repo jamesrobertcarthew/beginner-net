@@ -1,11 +1,7 @@
 import numpy as np
 from simple_net import simple_net
 
-#########################################################
-import os  # not neccesary, just a useful delineator :-P #
-# comment this if you have no sense of humour           #
-os.system('echo Go, Neural Network, Go! | cowsay | lolcat')  #
-#########################################################
+print 'here we go'
 
 # SETUP VARS
 # data_in = np.array([[0,0,-2,0],[0,1,1,0],[1,0,8,1],[1,1,1,1]])
