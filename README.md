@@ -57,7 +57,7 @@ Convert an ascii array to a (normalised) float array
 Convert a normalised Float array to ascii characters
 ###TO DO:
 * lets make this thing into more, smaller files and stuff... is getting out of control!!!
-* Make the default mode 'run til convergence' with option to overtrain by setting iteration value (think about this and commit before hand cause you WILL fuck it up
+* Make the default mode 'run til convergence' with option to overtrain by setting iteration value (think about this and commit before hand cause you WILL mess it up
 * gradient descent and drop output
 * CUDA dot product
 * Seperate net from main loop via sockets
