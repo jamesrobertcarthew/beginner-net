@@ -1,4 +1,3 @@
-# Beginner New
 Adventures in Machine Learning!!!
 ## [First Generation](https://github.com/jamesrobertcarthew/machine-learning-experiments/tree/first-generation)
 Converts [iamtrask](http://iamtrask.github.io/)'s 2 layer neural net into a class.
